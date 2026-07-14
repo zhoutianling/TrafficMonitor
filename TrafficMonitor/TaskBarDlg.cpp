@@ -12,6 +12,7 @@ namespace
 {
 constexpr int NETWORK_SPEED_DOT_SIZE = 6;
 constexpr int NETWORK_SPEED_DOT_SPACING = 1;
+constexpr int NETWORK_SPEED_DOT_ROW_GAP = 2;
 constexpr int NETWORK_SPEED_VALUE_FONT_SIZE = 9;
 constexpr unsigned __int64 NETWORK_SPEED_DOT_ACTIVITY_THRESHOLD = 1024;
 constexpr COLORREF NETWORK_DOWNLOAD_DOT_COLOR = RGB(0, 122, 255);
@@ -388,7 +389,17 @@ void CTaskBarDlg::DrawDisplayItem(IDrawCommon& drawer, DisplayItem type, CRect r
         if (dot_size > 0)
         {
             const int dot_x = rect_label.left;
-            const int dot_y = rect_label.top + (rect_label.Height() - dot_size) / 2;
+            int dot_y = rect_label.top + (rect_label.Height() - dot_size) / 2;
+            if (IsTasksbarOnTopOrBottom() && !theApp.m_taskbar_data.horizontal_arrange)
+            {
+                // 与 Stats 的 twoRows 模式一致，让两个圆点贴近两行分界线。
+                const int row_divider = m_window_height - TASKBAR_WND_HEIGHT / 2;
+                if (rect_label.bottom <= row_divider)
+                    dot_y = row_divider - DPI(NETWORK_SPEED_DOT_ROW_GAP) - dot_size;
+                else if (rect_label.top >= row_divider)
+                    dot_y = row_divider;
+                dot_y = max(rect_label.top, min(dot_y, rect_label.bottom - dot_size));
+            }
             const unsigned __int64 speed = type == TDI_DOWN ? theApp.m_in_speed : theApp.m_out_speed;
             const COLORREF active_dot_color = type == TDI_DOWN ? NETWORK_DOWNLOAD_DOT_COLOR : NETWORK_UPLOAD_DOT_COLOR;
             const COLORREF dot_color = speed < NETWORK_SPEED_DOT_ACTIVITY_THRESHOLD ? label_color : active_dot_color;

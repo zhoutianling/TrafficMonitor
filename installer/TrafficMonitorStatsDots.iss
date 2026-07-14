@@ -1,5 +1,7 @@
 #define AppName "TrafficMonitor (Stats Dots)"
-#define AppVersion "1.86-stats-dots"
+#ifndef AppVersion
+  #define AppVersion "1.86"
+#endif
 #define AppExeName "TrafficMonitor.exe"
 
 [Setup]
@@ -13,7 +15,7 @@ DefaultGroupName=TrafficMonitor Stats Dots
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\{#AppExeName}
 OutputDir=..\dist
-OutputBaseFilename=TrafficMonitor_1.86_StatsDots_x64_Setup
+OutputBaseFilename=TrafficMonitor_{#AppVersion}_StatsDots_x64_Setup
 SetupIconFile=..\TrafficMonitor\res\TrafficMonitor.ico
 Compression=lzma2/ultra64
 SolidCompression=yes
