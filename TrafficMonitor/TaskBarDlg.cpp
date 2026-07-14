@@ -12,7 +12,7 @@ namespace
 {
 constexpr int NETWORK_SPEED_DOT_SIZE = 6;
 constexpr int NETWORK_SPEED_DOT_SPACING = 1;
-constexpr int NETWORK_SPEED_DOT_ROW_GAP = 2;
+constexpr int NETWORK_SPEED_DOT_ROW_GAP = 5;
 constexpr int NETWORK_SPEED_VALUE_FONT_SIZE = 9;
 constexpr unsigned __int64 NETWORK_SPEED_DOT_ACTIVITY_THRESHOLD = 1024;
 constexpr COLORREF NETWORK_DOWNLOAD_DOT_COLOR = RGB(0, 122, 255);
@@ -392,7 +392,7 @@ void CTaskBarDlg::DrawDisplayItem(IDrawCommon& drawer, DisplayItem type, CRect r
             int dot_y = rect_label.top + (rect_label.Height() - dot_size) / 2;
             if (IsTasksbarOnTopOrBottom() && !theApp.m_taskbar_data.horizontal_arrange)
             {
-                // 与 Stats 的 twoRows 模式一致，让两个圆点贴近两行分界线。
+                // 按 Stats twoRows 的视觉比例保留圆点间距。
                 const int row_divider = m_window_height - TASKBAR_WND_HEIGHT / 2;
                 if (rect_label.bottom <= row_divider)
                     dot_y = row_divider - DPI(NETWORK_SPEED_DOT_ROW_GAP) - dot_size;
