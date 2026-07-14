@@ -7,6 +7,21 @@
 #include "afxdialogex.h"
 #include "TrafficMonitorDlg.h"
 #include "WindowsSettingHelper.h"
+
+namespace
+{
+constexpr int NETWORK_SPEED_DOT_SIZE = 6;
+constexpr int NETWORK_SPEED_DOT_SPACING = 1;
+constexpr int NETWORK_SPEED_VALUE_FONT_SIZE = 9;
+constexpr unsigned __int64 NETWORK_SPEED_DOT_ACTIVITY_THRESHOLD = 1024;
+constexpr COLORREF NETWORK_DOWNLOAD_DOT_COLOR = RGB(0, 122, 255);
+constexpr COLORREF NETWORK_UPLOAD_DOT_COLOR = RGB(255, 59, 48);
+
+bool IsNetworkSpeedItem(DisplayItem type)
+{
+    return type == TDI_UP || type == TDI_DOWN;
+}
+}
 #include "WIC.h"
 #include "Nullable.hpp"
 #include "DrawCommonFactory.h"
@@ -348,8 +363,10 @@ void CTaskBarDlg::DrawDisplayItem(IDrawCommon& drawer, DisplayItem type, CRect r
             break;
         }
 
-        if ((type != TDI_UP && type != TDI_DOWN && type != TDI_TOTAL_SPEED) && theApp.m_taskbar_data.show_status_bar
-            || (type == TDI_UP || type == TDI_DOWN || type == TDI_TOTAL_SPEED) && theApp.m_taskbar_data.show_netspeed_figure)
+        const bool show_usage_figure =
+            ((type != TDI_UP && type != TDI_DOWN && type != TDI_TOTAL_SPEED) && theApp.m_taskbar_data.show_status_bar)
+            || (type == TDI_TOTAL_SPEED && theApp.m_taskbar_data.show_netspeed_figure);
+        if (show_usage_figure)
         {
             if (theApp.m_taskbar_data.cm_graph_type)
             {
@@ -363,8 +380,23 @@ void CTaskBarDlg::DrawDisplayItem(IDrawCommon& drawer, DisplayItem type, CRect r
         }
     }
 
+    // 上传和下载使用彩色圆点作为方向标识，避免依赖箭头字形。
+    if (IsNetworkSpeedItem(type))
+    {
+        const int max_dot_size = DPI(NETWORK_SPEED_DOT_SIZE);
+        const int dot_size = min(max_dot_size, min(rect_label.Width(), rect_label.Height()));
+        if (dot_size > 0)
+        {
+            const int dot_x = rect_label.left;
+            const int dot_y = rect_label.top + (rect_label.Height() - dot_size) / 2;
+            const unsigned __int64 speed = type == TDI_DOWN ? theApp.m_in_speed : theApp.m_out_speed;
+            const COLORREF active_dot_color = type == TDI_DOWN ? NETWORK_DOWNLOAD_DOT_COLOR : NETWORK_UPLOAD_DOT_COLOR;
+            const COLORREF dot_color = speed < NETWORK_SPEED_DOT_ACTIVITY_THRESHOLD ? label_color : active_dot_color;
+            drawer.FillEllipse(CRect(dot_x, dot_y, dot_x + dot_size, dot_y + dot_size), dot_color);
+        }
+    }
     //绘制标签
-    if (label_width > 0)
+    else if (label_width > 0)
     {
         wstring str_label = theApp.m_taskbar_data.disp_str.GetConst(type);
         drawer.DrawWindowText(rect_label, str_label.c_str(), label_color, (vertical ? IDrawCommon::Alignment::CENTER : IDrawCommon::Alignment::LEFT));
@@ -374,8 +406,12 @@ void CTaskBarDlg::DrawDisplayItem(IDrawCommon& drawer, DisplayItem type, CRect r
     IDrawCommon::Alignment value_alignment{ theApp.m_taskbar_data.value_right_align ? IDrawCommon::Alignment::RIGHT : IDrawCommon::Alignment::LEFT };      //数值的对齐方式
     if (vertical)
         value_alignment = IDrawCommon::Alignment::CENTER;
+    if (IsNetworkSpeedItem(type))
+        drawer.SetFont(&m_network_speed_font);
     CString str_value = CommonDisplayItem(type).GetItemValueText(false);
     drawer.DrawWindowText(rect_value, str_value, text_color, value_alignment);
+    if (IsNetworkSpeedItem(type))
+        drawer.SetFont(&m_font);
 }
 
 void CTaskBarDlg::DrawPluginItem(IDrawCommon& drawer, IPluginItem* item, CRect rect, int label_width, bool vertical)
@@ -808,6 +844,15 @@ void CTaskBarDlg::SetTextFont()
     }
     //创建新的字体
     theApp.m_taskbar_data.font.Create(m_font, GetDPI());
+
+    if (m_network_speed_font.m_hObject)
+    {
+        m_network_speed_font.DeleteObject();
+    }
+    FontInfo network_speed_font{ theApp.m_taskbar_data.font };
+    network_speed_font.size = NETWORK_SPEED_VALUE_FONT_SIZE;
+    network_speed_font.bold = false;
+    network_speed_font.Create(m_network_speed_font, GetDPI());
 }
 
 void CTaskBarDlg::ApplySettings()
@@ -855,8 +900,18 @@ void CTaskBarDlg::CalculateWindowSize()
         }
         else
         {
-            //标签宽度
-            item_widths[*iter].label_width = m_pDC->GetTextExtent(theApp.m_taskbar_data.disp_str.GetConst(*iter).c_str()).cx;
+            //上传和下载以固定尺寸的彩色圆点代替文字标签。
+            if (IsNetworkSpeedItem(iter->ItemType()))
+            {
+                item_widths[*iter].label_width = DPI(NETWORK_SPEED_DOT_SIZE + NETWORK_SPEED_DOT_SPACING);
+                CFont* old_font = m_pDC->SelectObject(&m_network_speed_font);
+                CString sample_str = iter->GetItemValueSampleText(false);
+                item_widths[*iter].value_width = m_pDC->GetTextExtent(sample_str).cx;
+                m_pDC->SelectObject(old_font);
+                continue;
+            }
+            else
+                item_widths[*iter].label_width = m_pDC->GetTextExtent(theApp.m_taskbar_data.disp_str.GetConst(*iter).c_str()).cx;
             //数值宽度
             CString sample_str = iter->GetItemValueSampleText(false);
             item_widths[*iter].value_width = m_pDC->GetTextExtent(sample_str).cx;

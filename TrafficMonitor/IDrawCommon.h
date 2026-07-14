@@ -21,6 +21,8 @@ public:
     virtual void SetDrawRect(CRect rect) = 0;
     // 用纯色填充矩形
     virtual void FillRect(CRect rect, COLORREF color, BYTE alpha = 255) = 0;
+    // 用纯色填充椭圆
+    virtual void FillEllipse(CRect rect, COLORREF color, BYTE alpha = 255) = 0;
     // 绘制矩形边框。如果dot_line为true，则为虚线
     virtual void DrawRectOutLine(CRect rect, COLORREF color, int width = 1, bool dot_line = false, BYTE alpha = 255) = 0;
     // 使用当前画笔画线

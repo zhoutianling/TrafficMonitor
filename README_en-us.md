@@ -58,6 +58,7 @@ Note: Since version 1.86, the TrafficMonitor Lite version also provides monitori
 * If multiple network adapters are available, users can automatically or manually select networks to connect 
 * Display network connection details
 * Support embedded display in taskbar
+* The taskbar distinguishes upload and download with compact red and blue dots; indicators use the text color below 1 KB/s.
 * Support skin change and customizable skins
 * Historical traffic statistics
 * Hardware information monitoring
@@ -94,6 +95,8 @@ Options:
 As the program starts, a floating window showing network speed will appear on the screen. Right click on the floating window to open up the pop-up menu.
 
 TrafficMonitor can display information on the taskbar. However, the default setting for TrafficMonitor shows only the main window (floating window), in order to show embedded display on the taskbar, right click the window and select "Show Taskbar Window" in the pop-up menu.
+
+In the taskbar window, compact red and blue dots distinguish upload and download. Below 1 KB/s, each dot uses the taskbar text color.
 
 Users can customize displayed items on the embedded taskbar window. By default, only the network speed is displayed. In order to display CPU and RAM usage, or other informations, please select “Display Settings” in the right-click menu of the taskbar window, and check the items you want to display in the “Display Settings” dialog box, as shown below:
 

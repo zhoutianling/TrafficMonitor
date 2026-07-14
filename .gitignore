@@ -299,3 +299,5 @@ __pycache__/
 /TrafficMonitor/compile_time.txt
 !/TrafficMonitor/language/*.ini
 *.diagsession
+/dist/
+/installer/redist/

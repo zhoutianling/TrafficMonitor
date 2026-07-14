@@ -152,6 +152,7 @@ protected:
     UINT m_taskbar_dpi{};//TaskBarDlg自身专用dpi
 
     CFont m_font;			//字体
+    CFont m_network_speed_font;	//上下行网速数值字体
 
     CDC* m_pDC{};		//窗口的DC，用来计算窗口的宽度
 

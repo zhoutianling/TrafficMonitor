@@ -137,6 +137,17 @@ void CDrawCommon::FillRect(CRect rect, COLORREF color, BYTE alpha)
     m_pDC->FillSolidRect(rect, color);
 }
 
+void CDrawCommon::FillEllipse(CRect rect, COLORREF color, BYTE alpha)
+{
+    CBrush brush(color);
+    CPen pen(PS_NULL, 1, color);
+    CBrush* old_brush = m_pDC->SelectObject(&brush);
+    CPen* old_pen = m_pDC->SelectObject(&pen);
+    m_pDC->Ellipse(rect);
+    m_pDC->SelectObject(old_pen);
+    m_pDC->SelectObject(old_brush);
+}
+
 void CDrawCommon::FillRectWithBackColor(CRect rect)
 {
     m_pDC->FillSolidRect(rect, m_back_color);

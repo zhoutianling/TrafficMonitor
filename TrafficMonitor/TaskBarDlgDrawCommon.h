@@ -809,6 +809,8 @@ public:
     void SetDrawRect(CRect rect) override;
     // 用纯色填充矩形
     void FillRect(CRect rect, COLORREF color, BYTE alpha = 255) override;
+    // 用纯色填充椭圆
+    void FillEllipse(CRect rect, COLORREF color, BYTE alpha = 255) override;
     // 绘制矩形边框。如果dot_line为true，则为虚线
     void DrawRectOutLine(CRect rect, COLORREF color, int width = 1, bool dot_line = false, BYTE alpha = 255) override;
     // 使用当前画笔画线

@@ -22,6 +22,7 @@ public:
     void DrawWindowText(CRect rect, LPCTSTR lpszString, COLORREF color, Alignment align, bool draw_back_ground, bool multi_line, BYTE alpha) override;
     void SetDrawRect(CRect rect) override;
     void FillRect(CRect rect, COLORREF color, BYTE alpha) override;
+    void FillEllipse(CRect rect, COLORREF color, BYTE alpha) override;
     void DrawRectOutLine(CRect rect, COLORREF color, int width, bool dot_line, BYTE alpha) override;
     void DrawLine(CPoint start_point, int height, COLORREF color, BYTE alpha) override;
     void SetTextColor(const COLORREF color, BYTE alpha) override;

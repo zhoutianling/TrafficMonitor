@@ -89,6 +89,13 @@ void CDrawCommonEx::FillRect(CRect rect, COLORREF color, BYTE alpha)
     m_pGraphics->FillRectangle(&brush, rect_gdiplus);
 }
 
+void CDrawCommonEx::FillEllipse(CRect rect, COLORREF color, BYTE alpha)
+{
+    Gdiplus::RectF rect_gdiplus = CGdiPlusHelper::CRectToGdiplusRect(rect);
+    Gdiplus::SolidBrush brush(CGdiPlusHelper::COLORREFToGdiplusColor(color, alpha));
+    m_pGraphics->FillEllipse(&brush, rect_gdiplus);
+}
+
 void CDrawCommonEx::DrawRectOutLine(CRect rect, COLORREF color, int width, bool dot_line, BYTE alpha)
 {
 }

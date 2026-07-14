@@ -40,6 +40,7 @@ public:
     static void BitmapStretch(CImage* pImage, CImage* ResultImage, CSize size);
 
     void FillRect(CRect rect, COLORREF color, BYTE alpha = 255) override; //用纯色填充矩形
+    void FillEllipse(CRect rect, COLORREF color, BYTE alpha = 255) override;
     void FillRectWithBackColor(CRect rect);			//使用背景色填充矩形
     void DrawRectOutLine(CRect rect, COLORREF color, int width = 1, bool dot_line = false, BYTE alpha = 255) override; //绘制矩形边框。如果dot_line为true，则为虚线
 

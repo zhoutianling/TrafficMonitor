@@ -1834,6 +1834,18 @@ void CTaskBarDlgDrawCommon::FillRect(CRect rect, COLORREF color, BYTE alpha)
     m_p_device_context->FillRectangle(rect_f, m_p_d2d1_device_context_support->GetRawForeSolidColorBruch());
 }
 
+void CTaskBarDlgDrawCommon::FillEllipse(CRect rect, COLORREF color, BYTE alpha)
+{
+    D2D1_ELLIPSE ellipse{};
+    ellipse.point.x = (rect.left + rect.right) / 2.0f;
+    ellipse.point.y = (rect.top + rect.bottom) / 2.0f;
+    ellipse.radiusX = rect.Width() / 2.0f;
+    ellipse.radiusY = rect.Height() / 2.0f;
+
+    m_p_d2d1_device_context_support->SetForeColor(color, alpha);
+    m_p_device_context->FillEllipse(ellipse, m_p_d2d1_device_context_support->GetRawForeSolidColorBruch());
+}
+
 void CTaskBarDlgDrawCommon::DrawRectOutLine(CRect rect, COLORREF color, int width, bool dot_line, BYTE alpha)
 {
     rect.DeflateRect(width / 2, width / 2);
