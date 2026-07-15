@@ -139,13 +139,18 @@ void CDrawCommon::FillRect(CRect rect, COLORREF color, BYTE alpha)
 
 void CDrawCommon::FillEllipse(CRect rect, COLORREF color, BYTE alpha)
 {
-    CBrush brush(color);
-    CPen pen(PS_NULL, 1, color);
-    CBrush* old_brush = m_pDC->SelectObject(&brush);
-    CPen* old_pen = m_pDC->SelectObject(&pen);
-    m_pDC->Ellipse(rect);
-    m_pDC->SelectObject(old_pen);
-    m_pDC->SelectObject(old_brush);
+    if (m_pDC == nullptr || m_pDC->GetSafeHdc() == NULL)
+        return;
+
+    Gdiplus::Graphics graphics(m_pDC->GetSafeHdc());
+    graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+    Gdiplus::SolidBrush brush(Gdiplus::Color(alpha, GetRValue(color), GetGValue(color), GetBValue(color)));
+    Gdiplus::RectF ellipse_rect(
+        static_cast<Gdiplus::REAL>(rect.left),
+        static_cast<Gdiplus::REAL>(rect.top),
+        static_cast<Gdiplus::REAL>(rect.Width()),
+        static_cast<Gdiplus::REAL>(rect.Height()));
+    graphics.FillEllipse(&brush, ellipse_rect);
 }
 
 void CDrawCommon::FillRectWithBackColor(CRect rect)
